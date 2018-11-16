@@ -55,7 +55,7 @@ router.post('/register', function(req, res) {
 
     // if user is registered without errors
     // create a token
-    var token = jwt.sign({ id: user._id }, config.secret, {
+    var token = jwt.sign({ id: user._id, email: user.email }, config.secret, {
       expiresIn: 86400 // expires in 24 hours
     });
 
