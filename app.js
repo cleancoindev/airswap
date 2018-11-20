@@ -1,19 +1,31 @@
 var express = require('express');
-var cors = require('cors');
 var app = express();
-var db = require('./db');
-global.__root   = __dirname + '/'; 
+var mongoose = require('./db/connection');
+var bodyParser = require('body-parser');
+var web3 = require('./controller/web3Controller');
+global.__root = __dirname + '/';
 
-app.use(cors())
 
-app.get('/api', function (req, res) {
-  res.status(200).send('API works.');
+// for parsing application/json
+app.use(bodyParser.json());
+// for parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+// for parsing multipart/form-data
+//app.use(multer()); 
+
+app.get('/home', (req,res) => {
+	res.json({success: true});
 });
 
-var UserController = require(__root + 'user/UserController');
-app.use('/api/users', UserController);
+var UserController = require(__root + 'controller/userController');
+app.use('/user', UserController);
 
-var AuthController = require(__root + 'auth/AuthController');
-app.use('/api/auth', AuthController);
+var AuthenticationController = require(__root + 'controller/authenticationController');
+app.use('/auth', AuthenticationController);
 
-module.exports = app;
+var AdminController = require(__root + 'controller/adminController');
+app.use('/admin', AdminController);
+
+app.listen(3000, () => {
+	console.log("Server running on port 3000");
+});
