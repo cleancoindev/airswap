@@ -4,8 +4,6 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 var config = require('../utils/config');
-var verifyToken = require('../middleware/verifyToken');
-
 
 router.post('/register', (req,res) => {
 
@@ -21,9 +19,9 @@ router.post('/register', (req,res) => {
     
     user.save().then((doc) => {
         let token = jwt.sign({email : doc.email}, config.jwt_secret, {expiresIn: 86400});
-        res.json({status: 200, auth: true, token: token})
+        res.json({status: 200, auth: true, token: token});
     },(error) => {
-        console.log('error inserting to db');
+        return res.json({status:400, auth:false ,message:"Not registered"});
     });
 });
 
@@ -34,25 +32,21 @@ router.post('/login', (req,res) => {
     password = req.body.password;
 
     if(!email || !password){
-        console.log("Please enter email and password");
+        res.json({status:400,auth:false,message:"Enter email or password"});
     }else {
         User.findOne({email: email}).then((doc) => {
-        var passwordIsValid = bcrypt.compareSync(doc.password, password);
+        var passwordIsValid = bcrypt.compareSync(password,doc.password);
+        
         if(!passwordIsValid){
-            console.log("Password entered is incorrect");
+            return res.json({status: 403,auth:false,message:"incorrect password"});
         }else {
             token = jwt.sign({email : doc.email}, config.jwt_secret, {expiresIn: 86400});
-            res.json({status: 200, auth: true, token: token})
+            res.json({status: 200, auth: true, token: token});
         }
         },(err) => {
-            console.log("Sorry, requested email not found");
+            return res.json({status:400, auth:false,message:"Email does not exist"});
         })
     }
-});
-
-router.get('/blahblah',verifyToken, (req,res) => {
-    console.log('working.. !!');
-    res.json({status: 200, emailId: req.email})
 });
 
 module.exports = router;
