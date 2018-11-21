@@ -4,6 +4,7 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 var config = require('../utils/config');
+const verifyToken = require('../middleware/verifyToken');
 
 router.post('/register', (req,res) => {
 
@@ -65,21 +66,31 @@ router.post('/forgotpassword', (req, res) => {
 });
 
 
-router.post('/resetpassword', (req, res) => {
-    //token = got from the query string sent to the mail
-    // from token email should be obtained
-    // email = req.body.email;
-
+router.post('/resetpassword', verifyToken, (req, res) => {
+    var email = req.email;
     var password = req.body.password;
 
     if(!password){
         return res.json({status: 400, message: "request object does not contain password"});
-    }else {
+    }else if(!email){
+        return res.json({status: 400, message: "token missing"});
+    }else{
         var hashedPassword = bcrypt.hashSync(req.body.password);
-        // find email and consequently user and replace his password field with the obtained one
-    }
-    
 
+        User.findOne({email: email}).then((user) => {
+            if(user.password == hashedPassword){
+                return res.json({status: 400, message: "You are entering your old password"});
+            }
+            user.password = hashedPassword;
+            user.save().then((doc) => {
+                return res.json({status: 200, message: "Password changed successfully"});
+            }).catch((err) => {
+                return res.json({status: 400, message: "error saving password"});
+            });
+        }).catch((err) => {
+            return res.json({status: 400, message: "email does not exist"});
+        });
+    }
 });
 
 module.exports = router;
