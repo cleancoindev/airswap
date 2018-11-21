@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Coins = require('../models/coins');
-const verifiyToken = require('../middleware/verifyToken');
+const verifyToken = require('../middleware/verifyToken');
 
-router.get('/getcoins', verifiyToken, (req,res) => {
+router.get('/getcoins', verifyToken, (req,res) => {
 
 
 	Coins.find().then((doc)=> {
