@@ -6,6 +6,21 @@ var bcrypt = require('bcryptjs');
 var config = require('../utils/config');
 var smtpTransport = require('../utils/mailer');
 var verifyToken = require('../middleware/verifyToken');
+var handlebars = require('handlebars');
+var fs = require('fs');
+
+
+var readHTMLFile = function(path, callback) {
+    fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
+        if (err) {
+            throw err;
+            callback(err);
+        }
+        else {
+            callback(null, html);
+        }
+    });
+};
 
 router.get('/', (req, res) => {
     res.json({status: 'etho'})
@@ -17,21 +32,31 @@ router.post('/forgotpassword', (req, res) => {
     if(!email){
         return res.json({status: 404, message: "request data is incorrect"});
     } else{
-        User.findOne({email: email}).then((user) => {   
-            //send mail which identifies the user
-            var data = {
-                to: user.email,
-                from: config.admin_email,
-                subject: 'Password Reset Confirmation',
-                text: config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400})
-            };
-            smtpTransport.sendMail(data, function(err) {
-                if (!err) {
-                    return res.json({ message: 'Password reset mail sent' });
-                }else {
-                    console.log('mail send error', err);
-                    return res.json({status: 400}); 
+        User.findOne({email: email}).then((user) => {
+            var user = user;
+            var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
+            readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
+                var template = handlebars.compile(html);
+                var replacements = {
+                    username: user.name
+                    //redirectUrl: redirectUrl
                 }
+                var htmlToSend = template(replacements);
+                var data = {
+                    to: user.email,
+                    from: config.admin_email,
+                    subject: 'Password Reset Confirmation',
+                    html: htmlToSend
+                };
+                smtpTransport.sendMail(data, function(err) {
+                    if (!err) {
+                        return res.json({ message: 'Password reset mail sent' });
+                    }else {
+                        console.log('mail send error', err);
+                        return res.json({status: 400}); 
+                    }
+                });
+
             });
         }).catch((err) =>{
             return res.json({status:400, message:"Email does not exist" });
