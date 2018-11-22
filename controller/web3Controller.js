@@ -17,7 +17,7 @@ function getSymbol(tokenAddress){
                     resolve({tokenAddress,symbol});
                 }
             });
-        },(error) => {
+        }).catch((err) => {
             reject(new Error(0));
         });
     });

@@ -14,7 +14,7 @@ router.get('/getcoins', verifyToken, (req,res) => {
 		}
 
 		res.json({status: 200, coinInfo: coinArray})
-	},(err) => {
+	}).catch((err) => {
 		return res.json({status:400, auth:false ,message:"Coins cant be fethced from DB"});
 	});
 });

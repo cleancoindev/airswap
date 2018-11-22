@@ -25,11 +25,11 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
                     return res.json({status:200, auth:true ,message:"Success"});
                 }
 
-            },(error) => {
-                return res.json({status:500, auth:false ,message:"Not able to retrieve contract information"});
+            }).catch((err) => {
+                return res.json({status:500, auth:false ,message:"Error cannot save to db"});
             }); 
 
-        },(err) => {
+        }).catch((err) => {
             return res.json({status:500, auth:false ,message:"Not able to retrieve contract information"});
         });
     }
