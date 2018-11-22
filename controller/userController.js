@@ -7,20 +7,11 @@ var config = require('../utils/config');
 var smtpTransport = require('../utils/mailer');
 var verifyToken = require('../middleware/verifyToken');
 var handlebars = require('handlebars');
+var readHTMLFile = require('../utils/readfile');
 var fs = require('fs');
 
 
-var readHTMLFile = function(path, callback) {
-    fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
-        if (err) {
-            throw err;
-            callback(err);
-        }
-        else {
-            callback(null, html);
-        }
-    });
-};
+
 
 router.get('/', (req, res) => {
     res.json({status: 'etho'})
@@ -36,10 +27,11 @@ router.post('/forgotpassword', (req, res) => {
             var user = user;
             var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
             readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
+                
                 var template = handlebars.compile(html);
                 var replacements = {
-                    username: user.name
-                    //redirectUrl: redirectUrl
+                    username: user.name,
+                    redirectUrl: redirectUrl
                 }
                 var htmlToSend = template(replacements);
                 var data = {
