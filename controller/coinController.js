@@ -10,7 +10,7 @@ router.get('/getcoins', verifyToken, (req,res) => {
 		var coinArray = [];
 		
 		for(i =0;i<doc.length;i++) {
-			coinArray.push({address:doc[i].address,symbol:doc[i].symbol});
+			coinArray.push({address: doc[i].address, symbol: doc[i].symbol, decimals: doc[i].decimals, contractAbi: doc[i].contractABI});
 		}
 
 		res.json({status: 200, coinInfo: coinArray})

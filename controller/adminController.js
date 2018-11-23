@@ -11,12 +11,14 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
     var count = 0;
     for(i=0; i<coinAddress.length; i++) {
 
-        //symbol is got from etherscan and stored in db
-        var symbol = web3.getSymbol(coinAddress[i]).then((result) => {
-            
+        //coininfo is got from etherscan and stored in db
+        var coinInfo = web3.getTokenInfo(coinAddress[i]).then((result) => {
+
             let coin = new Coin({
                 address : result.tokenAddress,
-                symbol: result.symbol
+                symbol: result.symbol,
+                decimals : result.decimals,
+                contractABI : result.contractABI
             });
 
             coin.save().then((doc) => {

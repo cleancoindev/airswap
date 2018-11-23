@@ -11,6 +11,12 @@ var coinSchema = mongoose.Schema({
     },
     symbol:{
         type: String
+    },
+    decimals:{
+        type: String
+    },
+    contractABI:{
+        type: String
     }
 })
 
