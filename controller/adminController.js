@@ -42,11 +42,13 @@ router.get('/getusers', VerifyAdmin, (req,res) => {
     User.find().then((doc)=> {
 		var userArray = [];
 		for(i =0;i<doc.length;i++) {
-			userArray.push({name: doc[i].name, password: doc[i].password, email: doc[i].email});
+            userArray.push({name: doc[i].name, password: doc[i].password, email: doc[i].email, verified: doc[i].verified});
+            if(i == doc.length - 1){
+                res.json({status: 200, users: userArray})
+            }
 		}
-		res.json({status: 200, users: userArray})
 	}).catch((err) => {
-		return res.json({status:400, auth:false ,message:"Coins cant be fethced from DB"});
+		return res.json({status:400, auth:false ,message:"Coins cant be fetched from the database"});
 	});
 })
 

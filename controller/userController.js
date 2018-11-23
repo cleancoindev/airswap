@@ -11,12 +11,6 @@ var readHTMLFile = require('../utils/readfile');
 var fs = require('fs');
 
 
-
-
-router.get('/', (req, res) => {
-    res.json({status: 'etho'})
-});
-
 router.post('/forgotpassword', (req, res) => {
     var email = req.body.email;
 
@@ -27,6 +21,9 @@ router.post('/forgotpassword', (req, res) => {
             var user = user;
             var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
             readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
+                if(err){
+                    return res.json({status:404, message:"template fetch error" });
+                }
                 
                 var template = handlebars.compile(html);
                 var replacements = {
@@ -37,7 +34,7 @@ router.post('/forgotpassword', (req, res) => {
                 var data = {
                     to: user.email,
                     from: config.admin_email,
-                    subject: 'Password Reset Confirmation',
+                    subject: 'Nexswap, Password Reset Confirmation',
                     html: htmlToSend
                 };
                 smtpTransport.sendMail(data, function(err) {

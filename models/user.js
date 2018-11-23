@@ -23,6 +23,10 @@ var userSchema = mongoose.Schema({
         validate: {
             validator: validator.isEmail,
         }
+    },
+    verified: {
+        type: Boolean,
+        default: false
     }
 });
 
