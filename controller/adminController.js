@@ -15,14 +15,14 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
         //coininfo is got from etherscan and stored in db
         var coinInfo = web3.getTokenInfo(coinAddress[i]).then((result) => {
 
-            let coin = new Coin({
+            let coinInstance = new Coin({
                 address : result.tokenAddress,
                 symbol: result.symbol,
                 decimals : result.decimals,
                 contractABI : result.contractABI
             });
 
-            coin.save().then((doc) => {
+            coinInstance.save().then((doc) => {
                 count++;
                 if(count === coinAddress.length){
                     return res.json({status:200, auth:true ,message:"Success"});
