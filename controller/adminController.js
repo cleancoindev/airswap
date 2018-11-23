@@ -3,6 +3,7 @@ var router = express.Router();
 var web3 = require('./web3Controller');
 var VerifyAdmin = require('../middleware/verifyAdmin');
 var Coin = require('../models/coins');
+var User = require('../models/user');
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
 
@@ -36,5 +37,17 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
         });
     }
 });
+
+router.get('/getusers', VerifyAdmin, (req,res) => {
+    User.find().then((doc)=> {
+		var userArray = [];
+		for(i =0;i<doc.length;i++) {
+			userArray.push({name: doc[i].name, password: doc[i].password, email: doc[i].email});
+		}
+		res.json({status: 200, users: userArray})
+	}).catch((err) => {
+		return res.json({status:400, auth:false ,message:"Coins cant be fethced from DB"});
+	});
+})
 
 module.exports = router;
