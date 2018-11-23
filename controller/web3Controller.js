@@ -11,7 +11,7 @@ function getTokenInfo(tokenAddress){
             let contract = new web3.eth.Contract(contractABI, tokenAddress);
             contract.methods.symbol().call((err,symbol) => {
                 contract.methods.decimals().call((deciError,decimals) => {
-                    if(err){
+                    if(err || deciError){
                         reject(new Error(0));
                     }else{  
                         resolve({tokenAddress,symbol,decimals,contractABI});

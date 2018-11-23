@@ -20,7 +20,7 @@ router.post('/register', (req,res) => {
     user.save().then((doc) => {
         let token = jwt.sign({email : doc.email}, config.jwt_secret, {expiresIn: 86400});
         res.json({status: 200, auth: true, token: token});
-    },(error) => {
+    }).catch((error) => {
         return res.json({status:400, message:"Not registered"});
     });
 });
