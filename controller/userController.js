@@ -100,7 +100,7 @@ router.post('/updateusername', verifyToken, (req,res) => {
             return res.json({status: 400, message: "User is currently blocked"});
         }
         // username changed and saved below
-        user.username = username;
+        user.name = username;
         user.save().then((doc) => {
             return res.json({status: 200, message: "Username changed successfully"});
         }).catch((err) => {
