@@ -8,7 +8,6 @@ var smtpTransport = require('../utils/mailer');
 var verifyToken = require('../middleware/verifyToken');
 var handlebars = require('handlebars');
 var readHTMLFile = require('../utils/readfile');
-var fs = require('fs');
 
 
 router.post('/forgotpassword', (req, res) => {
@@ -19,6 +18,9 @@ router.post('/forgotpassword', (req, res) => {
     } else{
         User.findOne({email: email}).then((user) => {
             var user = user;
+            if(user.verified == false){
+                return res.json({status: 400, message: "User is currently blocked"});
+            }
             var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
             readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
                 if(err){
@@ -66,6 +68,9 @@ router.post('/resetpassword', verifyToken, (req, res) => {
         var hashedPassword = bcrypt.hashSync(req.body.password);
 
         User.findOne({email: email}).then((user) => {
+            if(user.verified == false){
+                return res.json({status: 400, message: "User is currently blocked"});
+            }
             if(user.password == hashedPassword){
                 return res.json({status: 400, message: "You are entering your old password"});
             }
@@ -79,6 +84,31 @@ router.post('/resetpassword', verifyToken, (req, res) => {
             return res.json({status: 400, message: "email does not exist"});
         });
     }
+});
+
+
+router.post('/updateusername', verifyToken, (req,res) => {
+    var email = req.email;
+    var username = req.body.username;
+
+    if(!email || !username){
+        return res.json({status: 400, message: "Invalid data or unauthorized request"});
+    }
+
+    User.findOne({email: email}).then((user) => {
+        if(user.verified == false){
+            return res.json({status: 400, message: "User is currently blocked"});
+        }
+        // username changed and saved below
+        user.username = username;
+        user.save().then((doc) => {
+            return res.json({status: 200, message: "Username changed successfully"});
+        }).catch((err) => {
+            return res.json({status: 400, message: "Error saving username"});
+        });
+    }).catch((err) => {
+        return res.json({status: 400, message: "Email does not exist"});
+    });
 });
 
 module.exports = router;
