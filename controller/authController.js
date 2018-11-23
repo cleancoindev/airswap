@@ -11,14 +11,22 @@ var fs = require('fs');
 
 router.post('/register', (req,res) => {
 
+    var email = req.body.email;
+    var password = req.body.password;
+    var name = req.body.name;
+
+    if(!email || !password || !name){
+        return res.json({status:400, auth:false, message:"Incorrect data"});
+    }
+
     if(req.body.password){
-        var hashedPwd = bcrypt.hashSync(req.body.password);
+        var hashedPwd = bcrypt.hashSync(password);
     }
 
     let user = new User({
-        name: req.body.name,
+        name: name,
         password: hashedPwd,
-        email: req.body.email
+        email: email
     });
     
     user.save().then((doc) => {
@@ -66,7 +74,7 @@ router.post('/login', (req,res) => {
     var verified = false;
     
     if(!email || !password){
-        res.json({status:400, auth:false, message:"Enter email or password"});
+        res.json({status:400, auth:false, message:"Enter email and password"});
     }
 
     function verifypwd(email){
