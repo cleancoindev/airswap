@@ -9,6 +9,11 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
 
     // array of address arrive
     var coinAddress = req.body.address;
+
+    if(!coinAddress){
+        res.json({status:400, auth:false, message:"Enter appropriate data"});
+    }
+    
     var count = 0;
     for(i=0; i<coinAddress.length; i++) {
 
@@ -50,6 +55,30 @@ router.get('/getusers', VerifyAdmin, (req,res) => {
 	}).catch((err) => {
 		return res.json({status:400, auth:false ,message:"Coins cant be fetched from the database"});
 	});
-})
+});
+
+
+router.post('/changestatus', VerifyAdmin, (req,res) => {
+    var email = req.body.email;
+
+    if(!email){
+        res.json({status:400, auth:false, message:"Enter appropriate data"});
+    }
+
+    User.findOne({email: email}).then((user) => {
+        if(user.verified == true){
+            user.verified = false;
+        }else{
+            user.verified = true;
+        }
+        user.save().then((doc) => {
+            return res.json({status: 200, message: "User status changed to " + doc.verified });
+        }).catch((err) => {
+            return res.json({status: 400, message: "error verifiying user, try after sometime"});
+        });
+    }).catch((err) => {
+        return res.json({status:400, auth:false ,message:"User not found"});
+    })
+});
 
 module.exports = router;
