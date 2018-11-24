@@ -74,12 +74,26 @@ router.post('/deleteuser', VerifyAdmin, (req,res) => {
     })
 });
 
+router.post('/updateprice', VerifyAdmin, (req,res) => {
+    var address = req.body.address;
+    var price = req.body.price;
+
+    if(!address || !price){
+        return res.json({status: 400, message: "Input incorrect"});
+    }
+    Coin.findOneAndUpdate({address: address}, {$set:{price: price}}).then((coin) => {
+        return res.json({status: 200, message: coin.address + " updated"})
+    }).catch((err) => {
+        return res.json({status: 400, message: "Cannot find coin"});
+    })
+
+});
+
 router.post('/deletecoins', VerifyAdmin, (req,res) => {
     var address = req.body.address;
     if(!address){
         return res.json({status: 400, message: "Input incorrect"});
     }
-    console.log(address);
     Coin.findOneAndDelete({address: address}).then((coin) => {
         return res.json({status: 200, message: coin.address + " deleted"})
     }).catch((err) => {
