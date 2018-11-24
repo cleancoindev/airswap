@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var Coin = require('../models/coins');
 const verifyToken = require('../middleware/verifyToken');
+var verifyBlocked = require('../middleware/verifyBlocked');
 
-router.get('/getcoins', verifyToken, (req,res) => {
+router.get('/getcoins', verifyToken, verifyBlocked, (req,res) => {
 
 	Coin.find().then((coin)=> {
 		var coinArray = [];
@@ -20,7 +21,7 @@ router.get('/getcoins', verifyToken, (req,res) => {
 	});
 });
 
-router.get('/getcoin/', verifyToken, (req,res) => {
+router.get('/getcoin/', verifyToken, verifyBlocked, (req,res) => {
 
 	var address = req.query.address;
 	if(!address){

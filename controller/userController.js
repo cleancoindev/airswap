@@ -8,9 +8,10 @@ var smtpTransport = require('../utils/mailer');
 var verifyToken = require('../middleware/verifyToken');
 var handlebars = require('handlebars');
 var readHTMLFile = require('../utils/readfile');
+var isBlocked = require('../middleware/verifyBlocked');
 
 
-router.post('/forgotpassword', (req, res) => {
+router.post('/forgotpassword', isBlocked, (req, res) => {
     var email = req.body.email;
 
     if(!email){
@@ -18,9 +19,6 @@ router.post('/forgotpassword', (req, res) => {
     } else{
         User.findOne({email: email}).then((user) => {
             var user = user;
-            if(user.verified == false){
-                return res.json({status: 400, message: "User is currently blocked"});
-            }
             var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
             readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
                 if(err){
@@ -56,7 +54,7 @@ router.post('/forgotpassword', (req, res) => {
 });
 
 
-router.post('/resetpassword', verifyToken, (req, res) => {
+router.post('/resetpassword', verifyToken, isBlocked, (req, res) => {
     var email = req.email;
     var password = req.body.password;
 
@@ -68,9 +66,6 @@ router.post('/resetpassword', verifyToken, (req, res) => {
         var hashedPassword = bcrypt.hashSync(req.body.password);
 
         User.findOne({email: email}).then((user) => {
-            if(user.verified == false){
-                return res.json({status: 400, message: "User is currently blocked"});
-            }
             if(user.password == hashedPassword){
                 return res.json({status: 400, message: "You are entering your old password"});
             }
@@ -87,7 +82,7 @@ router.post('/resetpassword', verifyToken, (req, res) => {
 });
 
 
-router.post('/updateusername', verifyToken, (req,res) => {
+router.post('/updateusername', verifyToken, isBlocked, (req,res) => {
     var email = req.email;
     var username = req.body.username;
 
@@ -96,9 +91,6 @@ router.post('/updateusername', verifyToken, (req,res) => {
     }
 
     User.findOne({email: email}).then((user) => {
-        if(user.verified == false){
-            return res.json({status: 400, message: "User is currently blocked"});
-        }
         // username changed and saved below
         user.name = username;
         user.save().then((doc) => {
@@ -111,7 +103,7 @@ router.post('/updateusername', verifyToken, (req,res) => {
     });
 });
 
-router.get('/getuser/', verifyToken, (req,res) => {
+router.get('/getuser/', verifyToken, isBlocked, (req,res) => {
 
 	var email = req.query.email;
     
