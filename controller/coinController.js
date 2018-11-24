@@ -10,10 +10,12 @@ router.get('/getcoins', verifyToken, (req,res) => {
 		var coinArray = [];
 		
 		for(i =0;i<doc.length;i++) {
-			coinArray.push({address: doc[i].address, symbol: doc[i].symbol, decimals: doc[i].decimals, contractAbi: doc[i].contractABI});
+			coinArray.push({address: doc[i].address, symbol: doc[i].symbol, decimals: doc[i].decimals, 
+				contractAbi: doc[i].contractABI, price: doc[i].price});
+			if(i == doc.length - 1){
+				return res.json({status: 200, coinInfo: coinArray})
+			}
 		}
-
-		res.json({status: 200, coinInfo: coinArray})
 	}).catch((err) => {
 		return res.json({status:400, auth:false ,message:"Coins cant be fethced from DB"});
 	});

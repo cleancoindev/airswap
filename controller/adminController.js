@@ -10,8 +10,9 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
 
     // array of address arrive
     var coinAddress = req.body.address;
+    var price = req.body.price;
 
-    if(!coinAddress){
+    if(!coinAddress || !price){
         res.json({status:400, auth:false, message:"Enter appropriate data"});
     }
     
@@ -25,7 +26,8 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
                 address : result.tokenAddress,
                 symbol: result.symbol,
                 decimals : result.decimals,
-                contractABI : result.contractABI
+                contractABI : result.contractABI,
+                price: price[count]
             });
 
             coinInstance.save().then((doc) => {

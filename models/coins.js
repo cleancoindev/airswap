@@ -18,6 +18,9 @@ var coinSchema = mongoose.Schema({
     },
     contractABI:{
         type: String
+    },
+    price: {
+        type: String
     }
 })
 
