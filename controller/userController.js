@@ -111,4 +111,21 @@ router.post('/updateusername', verifyToken, (req,res) => {
     });
 });
 
+router.get('/getuser/', verifyToken, (req,res) => {
+
+	var email = req.query.email;
+    
+    if(!email){
+		return res.json({status: 400, message: "request object does not contain email"});
+    }else if(req.email !== config.admin_email && req.email !== email){
+        return res.json({status: 400, message: "Unauthorized request"});
+    }
+    
+	User.findOne({email: email}).then((user) => {
+		return res.json({status: 200, user: user});
+	}).catch((err) => {
+		return res.json({status: 400, message: "User cannot be fetched from the database"})
+	});	
+});
+
 module.exports = router;
