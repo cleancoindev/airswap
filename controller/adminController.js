@@ -4,6 +4,7 @@ var web3 = require('./web3Controller');
 var VerifyAdmin = require('../middleware/verifyAdmin');
 var Coin = require('../models/coins');
 var User = require('../models/user');
+var config = require('../utils/config');
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
 
@@ -57,6 +58,32 @@ router.get('/getusers', VerifyAdmin, (req,res) => {
 	});
 });
 
+router.post('/deleteuser', VerifyAdmin, (req,res) => {
+    var email = req.body.email;
+    if(!email){
+        return res.json({status: 400, message: "Input incorrect"});
+    }else if(email == config.admin_email){
+        return res.json({status: 400, message: "Cannot remove admin"});
+    }
+    User.findOneAndDelete({email: email}).then((user) => {
+        return res.json({status: 200, message: user.email + " deleted"})
+    }).catch((err) => {
+        return res.json({status: 400, message: "Cannot find user"});
+    })
+});
+
+router.post('/deletecoins', VerifyAdmin, (req,res) => {
+    var address = req.body.address;
+    if(!address){
+        return res.json({status: 400, message: "Input incorrect"});
+    }
+    console.log(address);
+    Coin.findOneAndDelete({address: address}).then((coin) => {
+        return res.json({status: 200, message: coin.address + " deleted"})
+    }).catch((err) => {
+        return res.json({status: 400, message: "Cannot find coin"});
+    })
+});
 
 router.post('/changestatus', VerifyAdmin, (req,res) => {
     var email = req.body.email;
