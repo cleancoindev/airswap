@@ -107,7 +107,7 @@ router.post('/login', (req,res) => {
             if(user.verified == true){
                 verifypwd(email);
             }else{
-                res.json({status: 400, message: "confirm your registration by clicking on the mail"});
+                res.json({status: 400, message: "confirm your registration by clicking on the mail" , email:user.email, verified:user.verified});
             }
         }).catch((err) => {
             return res.json({status:400, message:"Email does not exist"});
