@@ -26,7 +26,8 @@ router.post('/register', (req,res) => {
     let user = new User({
         name: name,
         password: hashedPwd,
-        email: email
+        email: email,
+        verified: false
     });
     
     user.save().then((doc) => {
@@ -53,7 +54,7 @@ router.post('/register', (req,res) => {
             };
             smtpTransport.sendMail(data, function(err) {
                 if (!err) {
-                    return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to});
+                    return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to , verified: user.verified});
                 }else {
                     console.log('mail send error', err);
                     return res.json({status: 400 ,message: 'mail send error'}); 
