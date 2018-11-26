@@ -53,15 +53,15 @@ router.post('/register', (req,res) => {
             };
             smtpTransport.sendMail(data, function(err) {
                 if (!err) {
-                    return res.json({ message: 'Signup confirmation email sent' });
+                    return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to});
                 }else {
                     console.log('mail send error', err);
-                    return res.json({status: 400}); 
+                    return res.json({status: 400 ,message: 'mail send error'}); 
                 }
             });
         });
     }).catch((error) => {
-        return res.json({status:400, message:"Not registered"});
+        return res.json({status:400, message:"Already registered. Please Sign up."});
     });
 });
 
