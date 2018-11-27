@@ -3,7 +3,7 @@ var app = express();
 var mongoose = require('./db/connection');
 var bodyParser = require('body-parser');
 global.__root = __dirname + '/';
-
+var require = ('cors');
 
 // for parsing application/json
 app.use(bodyParser.json());
@@ -11,6 +11,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // for parsing multipart/form-data
 //app.use(multer()); 
+// for cross platform api call
+app.use(cors());
 
 app.get('/home', (req,res) => {
 	res.json({success: true});
