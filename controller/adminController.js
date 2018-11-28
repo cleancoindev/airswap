@@ -60,31 +60,32 @@ router.post('/adminLogin',(req,res) => {
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
 
+    console.log(req.body);
     // array of address arrive
-    var coinAddress = req.body.address;
-    var price = req.body.price;
+    var coinDetails = req.body.details;
+    //var price = req.body.price;
 
-    if(!coinAddress || !price){
+    if(!coinDetails){
         res.json({status:400, auth:false, message:"Enter appropriate data"});
     }
     
     var count = 0;
-    for(i=0; i<coinAddress.length; i++) {
+    for(i=0; i<coinDetails.length; i++) {
 
         //coininfo is got from etherscan and stored in db
-        var coinInfo = web3.getTokenInfo(coinAddress[i]).then((result) => {
+        var coinInfo = web3.getTokenInfo(coinDetails[i].address).then((result) => {
 
             let coinInstance = new Coin({
                 address : result.tokenAddress,
                 symbol: result.symbol,
                 decimals : result.decimals,
                 contractABI : result.contractABI,
-                price: price[count]
+                price: coinDetails[i].price
             });
 
             coinInstance.save().then((doc) => {
                 count++;
-                if(count === coinAddress.length){
+                if(count === coinDetails.length){
                     return res.json({status:200, auth:true ,message:"Success"});
                 }
 
