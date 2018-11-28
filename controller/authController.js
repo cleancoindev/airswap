@@ -42,19 +42,19 @@ router.post('/register', (req,res) => {
             
             var template = handlebars.compile(html);
             var replacements = {
-                username: user.name,
+                username: doc.name,
                 redirectUrl: redirectUrl
             }
             var htmlToSend = template(replacements);
             var data = {
-                to: user.email,
+                to: doc.email,
                 from: config.admin_email,
                 subject: 'Confirm your registration with Nexswap',
                 html: htmlToSend
             };
             smtpTransport.sendMail(data, function(err) {
                 if (!err) {
-                    return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to , verified: user.verified});
+                    return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to , verified: doc.verified});
                 }else {
                     console.log('mail send error', err);
                     return res.json({status: 400 ,message: 'mail send error'}); 
@@ -94,7 +94,7 @@ router.post('/login', (req,res) => {
                     });
                 }
                 token = jwt.sign({email: user.email}, config.jwt_secret, {expiresIn: 86400});
-                res.json({status: 200, auth: true, token: token});
+                res.json({status: 200, auth: true, token: token ,email:user.email, verified:user.verified});
             }
         }).catch((err) => {
             return res.json({status:400, message:"Email does not exist"});

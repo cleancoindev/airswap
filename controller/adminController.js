@@ -5,6 +5,58 @@ var VerifyAdmin = require('../middleware/verifyAdmin');
 var Coin = require('../models/coins');
 var User = require('../models/user');
 var config = require('../utils/config');
+var Admin = require('../models/admin');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
+
+router.post('/createAdmin', (req,res) => {
+
+    var email = req.body.email;
+    var password = req.body.password;
+
+    if(!email || !password){
+        res.json({status:400, auth:false, message:"Enter email and password"});
+    }
+
+    if(req.body.password){
+        var hashedPwd = bcrypt.hashSync(password);
+    }
+
+    let admin = new Admin({
+        email: email,
+        password: hashedPwd        
+    });
+
+    admin.save().then((admin) => {
+        return res.json({status:200 ,message: 'Admin created', email:admin.email});
+    }).catch((err) => {
+        return res.json({status:400, message:"Email does not exist"});
+    });
+
+})
+
+router.post('/adminLogin',(req,res) => {
+    var email = req.body.email;
+    var password = req.body.password;
+
+    if(!email || !password){
+        res.json({status:400, auth:false, message:"Enter email and password"});
+    }
+
+    Admin.findOne({email: email}).then((admin) => {
+            console.log(admin);
+            var passwordIsValid = bcrypt.compareSync(password, admin.password);
+            if(!passwordIsValid){
+                return res.json({status: 403, auth:false, message:"incorrect password"});
+            } else {
+                token = jwt.sign({email: admin.email}, config.jwt_secret, {expiresIn: 86400});
+                res.json({status: 200, auth: true, token: token ,email:admin.email});
+            }
+        }).catch((err) => {
+            return res.json({status:400, message:"Email does not exist"});
+        });
+});
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
 

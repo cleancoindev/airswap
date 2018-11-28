@@ -3,7 +3,7 @@ var app = express();
 var mongoose = require('./db/connection');
 var bodyParser = require('body-parser');
 global.__root = __dirname + '/';
-var require = ('cors');
+var cors = require('cors');
 
 // for parsing application/json
 app.use(bodyParser.json());
