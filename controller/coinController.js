@@ -7,15 +7,7 @@ var verifyBlocked = require('../middleware/verifyBlocked');
 router.get('/getcoins', verifyToken, verifyBlocked, (req,res) => {
 
 	Coin.find().then((coin)=> {
-		var coinArray = [];
-		
-		for(i =0;i<coin.length;i++) {
-			coinArray.push({address: coin[i].address, symbol: coin[i].symbol, decimals: coin[i].decimals, 
-				contractAbi: coin[i].contractABI, price: coin[i].price});
-			if(i == coin.length - 1){
-				return res.json({status: 200, coinInfo: coinArray})
-			}
-		}
+		return res.json({status: 200, coinInfo: coin});
 	}).catch((err) => {
 		return res.json({status:400, message:"Coins cant be fetched from the database"});
 	});
