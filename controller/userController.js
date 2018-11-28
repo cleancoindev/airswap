@@ -11,7 +11,7 @@ var readHTMLFile = require('../utils/readfile');
 var isBlocked = require('../middleware/verifyBlocked');
 
 
-router.post('/forgotpassword', isBlocked, (req, res) => {
+router.post('/forgotpassword', (req, res) => {
     var email = req.body.email;
 
     if(!email){
@@ -20,33 +20,38 @@ router.post('/forgotpassword', isBlocked, (req, res) => {
         User.findOne({email: email}).then((user) => {
             var user = user;
             var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
-            readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
-                if(err){
-                    return res.json({status:404, message:"template fetch error" });
-                }
-                
-                var template = handlebars.compile(html);
-                var replacements = {
-                    username: user.name,
-                    redirectUrl: redirectUrl
-                }
-                var htmlToSend = template(replacements);
-                var data = {
-                    to: user.email,
-                    from: config.admin_email,
-                    subject: 'Nexswap, Password Reset Confirmation',
-                    html: htmlToSend
-                };
-                smtpTransport.sendMail(data, function(err) {
-                    if (!err) {
-                        return res.json({ message: 'Password reset mail sent' });
-                    }else {
-                        console.log('mail send error', err);
-                        return res.json({status: 400}); 
-                    }
-                });
 
-            });
+            if(user.verified == true || email == config.admin_email){
+                readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {
+                    if(err){
+                        return res.json({status:404, message:"template fetch error" });
+                    }
+                    
+                    var template = handlebars.compile(html);
+                    var replacements = {
+                        username: user.name,
+                        redirectUrl: redirectUrl
+                    }
+                    var htmlToSend = template(replacements);
+                    var data = {
+                        to: user.email,
+                        from: config.admin_email,
+                        subject: 'Nexswap, Password Reset Confirmation',
+                        html: htmlToSend
+                    };
+                    smtpTransport.sendMail(data, function(err) {
+                        if (!err) {
+                            return res.json({ message: 'Password reset mail sent' });
+                        }else {
+                            console.log('mail send error', err);
+                            return res.json({status: 400}); 
+                        }
+                    });
+                });
+            } else {
+                return res.json({status: 400, message: "User is currently blocked"});
+            }
+            
         }).catch((err) =>{
             return res.json({status:400, message:"Email does not exist" });
         })
