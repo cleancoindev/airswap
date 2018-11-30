@@ -35,7 +35,7 @@ router.post('/register', (req,res) => {
 
         var redirectUrl = config.login_url + token;
 
-        readHTMLFile(__dirname + '/../templates/signup.html', function(err, html) {
+        readHTMLFile(__dirname + '/../templates/signup.html', (err, html) => {
             if(err){
                 return res.json({status:400, message:"template fetch error" });
             }
@@ -56,7 +56,6 @@ router.post('/register', (req,res) => {
                 if (!err) {
                     return res.json({status:200 ,message: 'Signup confirmation email sent', email:data.to , verified: doc.verified});
                 }else {
-                    console.log('mail send error', err);
                     return res.json({status: 400 ,message: 'mail send error'}); 
                 }
             });
@@ -88,7 +87,6 @@ router.post('/login', (req,res) => {
                 if(verified == true){
                     user.verified = true;
                     user.save().then((doc) => {
-                        console.log("user verified status changed");
                     }).catch((err) => {
                         return res.json({status: 400, message: "error verifiying user, try after sometime"});
                     });
