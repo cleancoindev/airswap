@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var mongoose = require('./db/connection');
+var db = require('./db/connection');
 var bodyParser = require('body-parser');
 global.__root = __dirname + '/';
 var cors = require('cors');

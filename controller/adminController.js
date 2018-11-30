@@ -59,27 +59,16 @@ router.post('/adminLogin',(req,res) => {
 });
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
-
-    
     // array of address arrive
     var coinDetails = req.body.details;
     //var price = req.body.price;
-
     if(!coinDetails){
         res.json({status:400, auth:false, message:"Enter appropriate data"});
     }
-
-
     var count = 0;
     for(i=0; i<coinDetails.length; i++) {
-
-
-
-        
-
         //coininfo is got from etherscan and stored in db
         var coinInfo = web3.getTokenInfo(coinDetails[i].address).then((result) => {
-
                        
             let coinInstance = new Coin({
                 address : result.tokenAddress,
@@ -88,20 +77,14 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
                 contractABI : result.contractABI,
                 price: coinDetails[count].price
             });
-
-            
-
-            coinInstance.save().then((doc) => {
-                
+            coinInstance.save().then((doc) => {                
                 count++;
                 if(count === coinDetails.length){
                     return res.json({status:200, auth:true ,message:"Success"});
                 }
-
             }).catch((err) => {
                 return res.json({status:500, auth:false ,message:"Error cannot save to db"});
             }); 
-
         }).catch((err) => {
             return res.json({status:500, auth:false ,message:"Not able to retrieve contract information"});
         });
