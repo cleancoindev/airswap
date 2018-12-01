@@ -30,6 +30,9 @@ app.use('/admin', AdminController);
 var CoinController = require(__root + 'controller/coinController');
 app.use('/coin', CoinController);
 
+var SiteSettingsController = require(__root + 'controller/siteSettingsController');
+app.use('/site', SiteSettingsController);
+
 app.listen(3000, () => {
 	console.log("Server running on port 3000");
 });
