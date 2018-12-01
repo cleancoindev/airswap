@@ -13,23 +13,19 @@ router.get('/getstrings', verifyAdmin, (req, res) => {
 });
 
 router.post('/poststrings', verifyAdmin, (req,res) => {
+	updateObject = {};
 	var id = 1;
-	var fblink = req.body.fblink || 'fb link goes here';
-	var twitterlink = req.body.twitterlink || 'twitter link goes here';
-	var redditlink = req.body.redditlink || 'reddit link goes here';
-	var homepage = req.body.homepage || 'homepage default content';
-	var copyright = req.body.copyright || 'copyright default content';
-
-	console.log("fblink", fblink);
-	updateObject = {fblink : fblink, twitterlink: twitterlink, redditlink: redditlink, 
-		homepage: homepage, copyright: copyright};
+	if(req.body.fblink) updateObject.fblink = req.body.fblink;
+	if(req.body.twitterlink) updateObject.twitterlink = req.body.twitterlink;
+	if(req.body.redditlink) updateObject.redditlink = req.body.redditlink;
+	if(req.body.homepage) updateObject.homepage = req.body.homepage;
+	if(req.body.copyright) updateObject.copyright = req.body.copyright;
 
 	SiteStrings.findOneAndUpdate({id: id}, updateObject, {upsert: true}).then((siteStrings) => {
-			return res.json({status: 200, message: "Site settings updated"})
-		}).catch((err) => {
-			console.log(err);
-			return res.json({status: 400, message: "Cannot update site settings"});
-		})
+		return res.json({status: 200, message: "Site settings updated"})
+	}).catch((err) => {
+		return res.json({status: 400, message: "Cannot update site settings"});
+	})
 });
 
 module.exports = router;
