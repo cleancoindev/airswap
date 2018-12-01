@@ -11,6 +11,12 @@ var adminSchema = mongoose.Schema({
    password: String
 });
 
+adminSchema.methods.toJSON = function(){
+   admin = this.toObject();
+   delete admin.password;
+   return admin;
+}
+
 var Admin = mongoose.model('Admin',adminSchema);
 
 module.exports = Admin;
