@@ -4,7 +4,10 @@ const validator = require('validator');
 mongoose.Promise = global.Promise;
 
 var adminSchema = mongoose.Schema({
-   email: String,
+   email:{
+      type: String,
+      unique: true
+   },
    password: String
 });
 

@@ -10,13 +10,17 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 
 
-router.post('/createAdmin', (req,res) => {
+router.post('/createadmin', (req,res) => {
 
     var email = req.body.email;
     var password = req.body.password;
 
     if(!email || !password){
         res.json({status:400, auth:false, message:"Enter email and password"});
+    }
+
+    if(email !== config.admin_email){
+        res.json({status: 400, auth: false, message: "Incorrect credentials"});
     }
 
     if(req.body.password){
@@ -29,14 +33,14 @@ router.post('/createAdmin', (req,res) => {
     });
 
     admin.save().then((admin) => {
-        return res.json({status:200 ,message: 'Admin created', email:admin.email});
+        return res.json({status:200 ,message: 'Admin created', email: admin.email});
     }).catch((err) => {
-        return res.json({status:400, message:"Email does not exist"});
+        return res.json({status:400, message: 'Admin exists'});
     });
 
 })
 
-router.post('/adminLogin',(req,res) => {
+router.post('/adminlogin', (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
 
@@ -45,17 +49,16 @@ router.post('/adminLogin',(req,res) => {
     }
 
     Admin.findOne({email: email}).then((admin) => {
-            
-            var passwordIsValid = bcrypt.compareSync(password, admin.password);
-            if(!passwordIsValid){
-                return res.json({status: 403, auth:false, message:"incorrect password"});
-            } else {
-                token = jwt.sign({email: admin.email}, config.jwt_secret, {expiresIn: 86400});
-                res.json({status: 200, auth: true, token: token ,email:admin.email});
-            }
-        }).catch((err) => {
-            return res.json({status:400, message:"Email does not exist"});
-        });
+        var passwordIsValid = bcrypt.compareSync(password, admin.password);
+        if(!passwordIsValid){
+            return res.json({status: 403, auth:false, message:"incorrect password"});
+        } else {
+            token = jwt.sign({email: admin.email}, config.jwt_secret, {expiresIn: 86400});
+            res.json({status: 200, auth: true, token: token ,email:admin.email});
+        }
+    }).catch((err) => {
+        return res.json({status:400, message:"Email does not exist"});
+    });
 });
 
 router.post('/addcoins', VerifyAdmin, (req,res) => {
@@ -83,7 +86,7 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
                     return res.json({status:200, auth:true ,message:"Success"});
                 }
             }).catch((err) => {
-                return res.json({status:500, auth:false ,message:"Error cannot save to db"});
+                return res.json({status:500, auth:false ,message:"Error cannot save to database"});
             }); 
         }).catch((err) => {
             return res.json({status:500, auth:false ,message:"Not able to retrieve contract information"});
@@ -92,14 +95,8 @@ router.post('/addcoins', VerifyAdmin, (req,res) => {
 });
 
 router.get('/getusers', VerifyAdmin, (req,res) => {
-    User.find().then((doc)=> {
-		var userArray = [];
-		for(i =0;i<doc.length;i++) {
-            userArray.push({name: doc[i].name, password: doc[i].password, email: doc[i].email, verified: doc[i].verified});
-            if(i == doc.length - 1){
-                res.json({status: 200, users: userArray})
-            }
-		}
+    User.find().then((users)=> {
+        res.json({status: 200, users: users});
 	}).catch((err) => {
 		return res.json({status:400, auth:false ,message:"Coins cant be fetched from the database"});
 	});

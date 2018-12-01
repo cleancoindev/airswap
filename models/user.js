@@ -30,6 +30,12 @@ var userSchema = mongoose.Schema({
     }
 });
 
+userSchema.methods.toJSON = function(){
+    user = this.toObject();
+    delete user.password;
+    return user;
+}
+
 var User = mongoose.model('User',userSchema);
 
 module.exports = User;
