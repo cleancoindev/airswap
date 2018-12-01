@@ -166,4 +166,20 @@ router.post('/changestatus', VerifyAdmin, (req,res) => {
     })
 });
 
+router.get('/usercount', VerifyAdmin, (req,res) => {
+    User.count().then((count) => {
+        return res.json({status: 200, count: count});
+    }).catch((err) => {
+        return res.json({status: 400, message: "Service is currently not available"});
+    });
+});
+
+router.get('/coincount', VerifyAdmin, (req,res) => {
+    Coin.count().then((count) => {
+        return res.json({status: 200, count: count});
+    }).catch((err) => {
+        return res.json({status: 400, message: "Service is currently not available"});
+    });
+});
+
 module.exports = router;
