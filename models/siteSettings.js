@@ -28,6 +28,14 @@ var settingSchema = mongoose.Schema({
    copyright: {
       type: String,
       default: 'copyright default content'
+   },
+   sitename:{
+      type: String,
+      default: 'default site name'
+   },
+   supportmailid: {
+      type: String,
+      default: 'support mailId goes here'
    }
 });
 

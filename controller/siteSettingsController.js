@@ -20,6 +20,8 @@ router.post('/poststrings', verifyAdmin, (req,res) => {
 	if(req.body.redditlink) updateObject.redditlink = req.body.redditlink;
 	if(req.body.homepage) updateObject.homepage = req.body.homepage;
 	if(req.body.copyright) updateObject.copyright = req.body.copyright;
+	if(req.body.sitename) updateObject.sitename = req.body.sitename;
+	if(req.body.supportmailid) updateObject.supportmailid = req.body.supportmailid;
 
 	SiteStrings.findOneAndUpdate({id: id}, updateObject, {upsert: true}).then((siteStrings) => {
 		return res.json({status: 200, message: "Site settings updated"})
