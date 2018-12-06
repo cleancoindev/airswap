@@ -10,32 +10,34 @@ var settingSchema = mongoose.Schema({
       unique: true
    },
    fblink: {
-      type: String,
-      default: 'fb link goes here'
+      type: String
    },
    twitterlink: {
-      type: String,
-      default: 'twitter link goes here'
+      type: String
    },
    redditlink: {
-      type: String,
-      default: 'reddit link goes here'
+      type: String
    },
    homepage: {
-      type: String,
-      default: 'homepage default content'
+      type: String
    },
    copyright: {
-      type: String,
-      default: 'copyright default content'
+      type: String
    },
    sitename:{
-      type: String,
-      default: 'default site name'
+      type: String
    },
    supportmailid: {
-      type: String,
-      default: 'support mailId goes here'
+      type: String
+   },
+   wethcontract: {
+      type: String
+   },
+   adminaddress: {
+      type: String
+   },
+   nexswapaddress:{
+      type: String
    }
 });
 

@@ -22,6 +22,9 @@ router.post('/poststrings', verifyAdmin, (req,res) => {
 	if(req.body.copyright) updateObject.copyright = req.body.copyright;
 	if(req.body.sitename) updateObject.sitename = req.body.sitename;
 	if(req.body.supportmailid) updateObject.supportmailid = req.body.supportmailid;
+	if(req.body.wethcontract) updateObject.wethcontract = req.body.wethcontract;
+	if(req.body.adminaddress) updateObject.adminaddress = req.body.adminaddress;
+	if(req.body.nexswapaddress) updateObject.nexswapaddress = req.body.nexswapaddress;
 
 	SiteStrings.findOneAndUpdate({id: id}, updateObject, {upsert: true}).then((siteStrings) => {
 		return res.json({status: 200, message: "Site settings updated"})
