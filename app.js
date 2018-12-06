@@ -9,8 +9,8 @@ var cors = require('cors');
 app.use(bodyParser.json());
 // for parsing application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-// for parsing multipart/form-data
-//app.use(multer());
+// for permitting access to uploads folder.
+app.use('/uploads', express.static(__root + '/uploads'));
 // for cross platform api call
 app.use(cors());
 

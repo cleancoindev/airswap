@@ -21,6 +21,9 @@ var coinSchema = mongoose.Schema({
     },
     price: {
         type: String
+    },
+    coinImage: {
+        type: String
     }
 })
 

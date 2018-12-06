@@ -8,6 +8,30 @@ var config = require('../utils/config');
 var Admin = require('../models/admin');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var multer = require('multer');
+
+
+const storage = multer.diskStorage({
+    destination: (req,file,cb) => {
+        cb(null,'./uploads/');
+    },
+    filename: (req,file,cb) => {
+        cb(null,new Date().toISOString() + file.originalname);
+    } 
+});
+
+    const fileFilter = (req,file,cb) => {
+
+        if(file.mimetype !== 'image/jpeg' || file.mimetype !== 'image/png') {
+            cb(null,false);
+        } 
+            cb(null,true);        
+    }
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 
 router.post('/createadmin', (req,res) => {
@@ -61,7 +85,25 @@ router.post('/adminlogin', (req,res) => {
     });
 });
 
-router.post('/addcoins', VerifyAdmin, (req,res) => {
+router.post('/addimage',VerifyAdmin,upload.single('coinImage'),(req,res) => {
+
+    var address = req.body.address;
+    var coinImage = req.file;
+
+    if(!address || !coinImage){
+        return res.json({status: 400, message: "Input incorrect"});
+    }
+
+    Coin.findOneAndUpdate({address: address}, {$set:{coinImage: coinImage.path}}).then((coin) => {
+        return res.json({status: 200, message: coin.address + " image added..!!"})
+    }).catch((err) => {
+        return res.json({status: 200, file: req.file.originalname, message: "Coin address doesn't exist"});
+    });
+    
+});
+
+router.post('/addcoins', VerifyAdmin,(req,res) => {
+
     // array of address arrive
     var coinDetails = req.body.details;
     //var price = req.body.price;
@@ -127,7 +169,7 @@ router.post('/updateprice', VerifyAdmin, (req,res) => {
         return res.json({status: 200, message: coin.address + " updated"})
     }).catch((err) => {
         return res.json({status: 400, message: "Cannot find coin"});
-    })
+    });
 
 });
 
