@@ -11,15 +11,16 @@ function isBlocked(req, res, next){
 
     if(!(email == config.admin_email)){
         User.findOne({email: email}).then((user) => {
-            if(user.verified == false && user.email != config.admin_email){
+            if(user.verified == false){
                 return res.json({status: 400, message: "User is currently blocked"});
             }    
             next();
         }).catch((err) => {
             return res.json({status: 400, message: "email does not exist"});
         });
+    }else {
+        next();
     }
-    next();
 }
 
 module.exports = isBlocked;

@@ -24,6 +24,10 @@ var coinSchema = mongoose.Schema({
     },
     coinImage: {
         type: String
+    },
+    approved: {
+        type: Boolean,
+        default: false
     }
 })
 

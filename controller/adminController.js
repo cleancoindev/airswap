@@ -20,13 +20,13 @@ const storage = multer.diskStorage({
     } 
 });
 
-    const fileFilter = (req,file,cb) => {
+const fileFilter = (req,file,cb) => {
 
-        if(file.mimetype !== 'image/jpeg' || file.mimetype !== 'image/png') {
-            cb(null,false);
-        } 
-            cb(null,true);        
-    }
+    if(file.mimetype !== 'image/jpeg' || file.mimetype !== 'image/png') {
+        cb(null,false);
+    } 
+        cb(null,true);        
+}
 
 const upload = multer({
     storage: storage,
@@ -206,6 +206,44 @@ router.post('/changestatus', VerifyAdmin, (req,res) => {
     }).catch((err) => {
         return res.json({status:400, auth:false ,message:"User not found"});
     })
+});
+
+router.post('/toggleapproved', VerifyAdmin, (req,res) => {
+    let address = req.body.address;
+    if(!address){
+        res.json({message: "Address not found"});
+    }
+    Coin.findOne({address: address}).then((coin) => {
+        coin.approved = true;
+        return coin.save();
+    }).then((coin) => {
+        return res.json({message: "coin approved"});
+    }).catch((err) => {
+        return res.json({message: "Coin update error"});
+    })
+});
+
+router.get('/getcoins', VerifyAdmin, (req,res) => {
+
+	Coin.find().then((coin)=> {
+		return res.json({status: 200, coinInfo: coin});
+	}).catch((err) => {
+		return res.json({status:400, message:"Coins cant be fetched from the database"});
+	});
+});
+
+router.get('/getcoin/', VerifyAdmin, (req,res) => {
+
+	var address = req.query.address;
+	if(!address){
+		return res.json({status: 400, message: "request object does not contain address"});
+	}
+	Coin.findOne({address: address}).then((coin) => {
+		return res.json({status: 200, coin: coin});
+	}).catch((err) => {
+		return res.json({status: 400, message: "Coin cannot be fetched from the database"})
+	});
+	
 });
 
 router.get('/usercount', VerifyAdmin, (req,res) => {
