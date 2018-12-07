@@ -92,7 +92,7 @@ router.post('/login', (req,res) => {
                     });
                 }
                 token = jwt.sign({email: user.email}, config.jwt_secret, {expiresIn: 86400});
-                res.json({status: 200, auth: true, token: token ,email:user.email, verified:user.verified});
+                res.json({status: 200, auth: true, token: token ,email:user.email, verified:user.verified ,name: user.name});
             }
         }).catch((err) => {
             return res.json({status:400, message:"Email does not exist"});
