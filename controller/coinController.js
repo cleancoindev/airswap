@@ -13,20 +13,27 @@ router.get('/getcoins', verifyToken, verifyBlocked, (req,res) => {
 });
 
 router.get('/getcoin/', verifyToken, verifyBlocked, (req,res) => {
-
 	var address = req.query.address;
-	console.log("before",address);
 	if(!address){
-		console.log("middle",address);
 		return res.json({status: 400, message: "request object does not contain address"});
 	}
 	Coin.findOne({address: address, approved: true}).then((coin) => {
 		res.json({status: 200, coin: coin});
 	}).catch((err) => {
-		console.log("last",err);
 		return res.json({status: 400, message: "Coin cannot be fetched from the database"})
+	});	
+});
+
+router.get('/searchcoin/', (req,res) => {
+	var coin = req.query.coinsymbol;
+	if(!coin){
+		return res.json({message: "data insufficient"});
+	}
+	Coin.find({'symbol': {'$regex': coin, '$options': 'i'}}).then((coins) => {
+		return res.json({coins: coins});
+	}).catch((err) => {
+		return res.json({message: "Cannot query db"});
 	});
-	
 });
 
 module.exports = router;
