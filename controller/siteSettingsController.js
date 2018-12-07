@@ -2,6 +2,29 @@ var express = require('express');
 var router = express.Router();
 var SiteStrings = require('../models/siteSettings');
 var verifyAdmin = require('../middleware/verifyAdmin');
+var multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req,file,cb) => {
+        cb(null,'./uploads/');
+    },
+    filename: (req,file,cb) => {
+        cb(null,new Date().toISOString() + file.originalname);
+    } 
+});
+
+const fileFilter = (req,file,cb) => {
+
+    if(file.mimetype !== 'image/jpeg' || file.mimetype !== 'image/png') {
+        cb(null,false);
+    } 
+        cb(null,true);        
+}
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 
 router.get('/getstrings', verifyAdmin, (req, res) => {
@@ -31,6 +54,38 @@ router.post('/poststrings', verifyAdmin, (req,res) => {
 	}).catch((err) => {
 		return res.json({status: 400, message: "Cannot update site settings"});
 	})
+});
+
+router.post('/addlogo',verifyAdmin,upload.single('logoImage'),(req,res) => {
+
+    var logoImage = req.file;
+
+    if(!logoImage){
+        return res.json({status: 400, message: "Input incorrect"});
+    }
+
+    SiteStrings.findOneAndUpdate({id: id}, {$set:{logoImage: logoImage.path}}).then((coin) => {
+        return res.json({status: 200, message: "logo image added..!!"})
+    }).catch((err) => {
+        return res.json({status: 200, file: req.file.originalname, message: "Logo Image adding failed"});
+    });
+    
+});
+
+router.post('/addfavicon',verifyAdmin,upload.single('favIcon'),(req,res) => {
+
+    var favIcon = req.file;
+
+    if(!favIcon){
+        return res.json({status: 400, message: "Input incorrect"});
+    }
+
+    SiteStrings.findOneAndUpdate({id: id}, {$set:{favIcon: favIcon.path}}).then((coin) => {
+        return res.json({status: 200, message: "Fav Icon added..!!"})
+    }).catch((err) => {
+        return res.json({status: 200, file: req.file.originalname, message: "Fav Icon adding failed"});
+    });
+    
 });
 
 module.exports = router;

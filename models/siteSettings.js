@@ -38,6 +38,12 @@ var settingSchema = mongoose.Schema({
    },
    nexswapaddress:{
       type: String
+   },
+   logoImage:{
+      type: String
+   },
+   favIcon: {
+      type: String
    }
 });
 
