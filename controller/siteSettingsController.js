@@ -3,6 +3,7 @@ var router = express.Router();
 var SiteStrings = require('../models/siteSettings');
 var verifyAdmin = require('../middleware/verifyAdmin');
 var multer = require('multer');
+var verifyToken = require('../middleware/verifyToken');
 
 const storage = multer.diskStorage({
     destination: (req,file,cb) => {
@@ -27,7 +28,7 @@ const upload = multer({
 });
 
 
-router.get('/getstrings', verifyAdmin, (req, res) => {
+router.get('/getstrings', verifyToken, (req, res) => {
     SiteStrings.find().then((strings)=> {
 		return res.json({status: 200, strings: strings});
 	}).catch((err) => {
