@@ -120,7 +120,8 @@ router.post('/addcoins', VerifyAdmin,(req,res) => {
                 symbol: result.symbol,
                 decimals : result.decimals,
                 contractABI : result.contractABI,
-                price: coinDetails[count].price
+                price: coinDetails[count].price,
+                color: coinDetails[count].color
             });
             coinInstance.save().then((doc) => {                
                 count++;
@@ -158,14 +159,16 @@ router.post('/deleteuser', VerifyAdmin, (req,res) => {
     })
 });
 
-router.post('/updateprice', VerifyAdmin, (req,res) => {
+router.post('/updatecoin', VerifyAdmin, (req,res) => {
     var address = req.body.address;
-    var price = req.body.price;
-
-    if(!address || !price){
+    if(!address){
         return res.json({status: 400, message: "Input incorrect"});
     }
-    Coin.findOneAndUpdate({address: address}, {$set:{price: price}}).then((coin) => {
+    var updateCoin = {};
+    if(req.body.color) updateCoin.color = req.body.color;
+	if(req.body.price) updateCoin.price = req.body.price;
+
+    Coin.findOneAndUpdate({address: address}, updateCoin, {upsert: true}).then((coin) => {
         return res.json({status: 200, message: coin.address + " updated"})
     }).catch((err) => {
         return res.json({status: 400, message: "Cannot find coin"});
