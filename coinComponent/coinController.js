@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Coin = require('../models/coins');
+var Coin = require('./coins');
 const verifyToken = require('../middleware/verifyToken');
 var verifyBlocked = require('../middleware/verifyBlocked');
 

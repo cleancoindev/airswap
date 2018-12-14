@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var SiteStrings = require('../models/siteSettings');
+var SiteStrings = require('./siteSettings');
 var verifyAdmin = require('../middleware/verifyAdmin');
 var verifyToken = require('../middleware/verifyToken');
 var upload = require('../utils/fileUpload');

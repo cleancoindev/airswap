@@ -1,4 +1,4 @@
-var User = require('../models/user');
+var User = require('../userComponent/user');
 var config = require('../utils/config');
 
 function isBlocked(req, res, next){

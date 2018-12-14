@@ -18,19 +18,19 @@ app.get('/home', (req,res) => {
 	res.json({success: true});
 });
 
-var UserController = require(__root + 'controller/userController');
+var UserController = require(__root + 'userComponent/userController');
 app.use('/user', UserController);
 
-var AuthController = require(__root + 'controller/authController');
+var AuthController = require(__root + 'authComponent/authController');
 app.use('/auth', AuthController);
 
-var AdminController = require(__root + 'controller/adminController');
+var AdminController = require(__root + 'adminComponent/adminController');
 app.use('/admin', AdminController);
 
-var CoinController = require(__root + 'controller/coinController');
+var CoinController = require(__root + 'coinComponent/coinController');
 app.use('/coin', CoinController);
 
-var SiteSettingsController = require(__root + 'controller/siteSettingsController');
+var SiteSettingsController = require(__root + 'siteSettingsComponent/siteSettingsController');
 app.use('/site', SiteSettingsController);
 
 app.listen(3000, () => {
