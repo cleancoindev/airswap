@@ -24,7 +24,7 @@ router.get('/getcoin/', verifyToken, verifyBlocked, (req,res) => {
 	});	
 });
 
-router.get('/searchcoin/', (req,res) => {
+router.get('/searchcoin/', verifyToken, verifyBlocked, (req,res) => {
 	var coin = req.query.coinsymbol;
 	if(!coin){
 		return res.json({message: "data insufficient"});
