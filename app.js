@@ -4,6 +4,7 @@ var db = require('./db/connection');
 var bodyParser = require('body-parser');
 global.__root = __dirname + '/';
 var cors = require('cors');
+var router = express.Router();
 
 // for parsing application/json
 app.use(bodyParser.json());
@@ -14,24 +15,24 @@ app.use('/uploads', express.static(__root + '/uploads'));
 // for cross platform api call
 app.use(cors());
 
-app.get('/home', (req,res) => {
+app.get('/api/home', (req,res) => {
 	res.json({success: true});
 });
 
 var UserController = require(__root + 'userComponent/userController');
-app.use('/user', UserController);
+app.use('/api/user', UserController);
 
 var AuthController = require(__root + 'authComponent/authController');
-app.use('/auth', AuthController);
+app.use('/api/auth', AuthController);
 
 var AdminController = require(__root + 'adminComponent/adminController');
-app.use('/admin', AdminController);
+app.use('/api/admin', AdminController);
 
 var CoinController = require(__root + 'coinComponent/coinController');
-app.use('/coin', CoinController);
+app.use('/api/coin', CoinController);
 
 var SiteSettingsController = require(__root + 'siteSettingsComponent/siteSettingsController');
-app.use('/site', SiteSettingsController);
+app.use('/api/site', SiteSettingsController);
 
 app.listen(3000, () => {
 	console.log("Server running on port 3000");
