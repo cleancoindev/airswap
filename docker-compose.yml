@@ -1,7 +1,7 @@
-version: '1'
+version: '3.4'
 services:
   app:
-    container_name: docker-node-mongo
+    container_name: nexswap-backend
     restart: always
     build: .
     ports:
