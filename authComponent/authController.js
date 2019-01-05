@@ -33,7 +33,7 @@ router.post('/register', (req,res) => {
     user.save().then((doc) => {
         let token = jwt.sign({email : doc.email}, config.jwt_secret, {expiresIn: 86400});
 
-        var redirectUrl = config.user_login_url + token;
+        var redirectUrl = config.user_login_url + '/' + token;
 
         readHTMLFile(__dirname + '/../templates/signup.html', (err, html) => {
             if(err){
