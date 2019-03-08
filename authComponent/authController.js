@@ -102,11 +102,11 @@ router.post('/login', (req,res) => {
     if(!token){
         //check user verified, then normal login
         User.findOne({email: email}).then((user) => {
-            if(user.verified == true){
+            // if(user.verified == true){
                 verifypwd(email);
-            }else{
-                res.json({status: 400, message: "confirm your registration by clicking on the mail" , email:user.email, verified:user.verified});
-            }
+            // }else{
+            //     res.json({status: 400, message: "confirm your registration by clicking on the mail" , email:user.email, verified:user.verified});
+            // }
         }).catch((err) => {
             return res.json({status:400, message:"Email does not exist"});
         });       
