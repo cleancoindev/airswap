@@ -19,7 +19,7 @@ router.post('/forgotpassword', (req, res) => {
     } else{
         User.findOne({email: email}).then((user) => {
             var user = user;
-            var redirectUrl = config.reset_password_url + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 86400});
+            var redirectUrl = config.reset_password_url + '/' + jwt.sign({email : user.email}, config.jwt_secret, {expiresIn: 300});
 
             if(user.verified == true || email == config.admin_email){
                 readHTMLFile(__dirname + '/../templates/forgotpassword.html', function(err, html) {

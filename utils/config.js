@@ -3,7 +3,7 @@ const config = {
     admin_email: 'support@nextazy.com',
     mailer_email: 'support@nextazy.com',
     mailer_password: 'support@123',
-    reset_password_url: 'https://www.google.co.in/',
+    reset_password_url: 'https://www.nexswap.com/reset',
     user_login_url: 'https://www.nexswap.com/signin',
     admin_login_url: 'https://www.admin.nexswap.com/admin/login'
     //may be needed in the future
