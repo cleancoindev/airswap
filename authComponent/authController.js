@@ -71,39 +71,42 @@ router.post('/login', (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     var token = req.headers['x-access-token'] || req.headers['authorization'];
-    var verified = false;
+    var verifiedBool = false;
     
     if(!email || !password){
         res.json({status:400, auth:false, message:"Enter email and password"});
     }
 
-    function verifypwd(email){
-        User.findOne({email: email}).then((user) => {
-            var passwordIsValid = bcrypt.compareSync(password, user.password);
+
+    function verifypwd(email,user){
+        var passwordIsValid = bcrypt.compareSync(password, user.password);
             
-            if(!passwordIsValid){
+        if(!passwordIsValid){
                 return res.json({status: 403, auth:false, message:"incorrect password"});
-            }else {
-                if(verified == true){
+        }else if(!user.verified && !verifiedBool){
+                return res.json({status: 403, auth:false, message:"Email not verified"});
+        }else if(user.verified){
+                token = jwt.sign({email: user.email}, config.jwt_secret, {expiresIn: 86400});
+                res.json({status: 200, auth: true, token: token ,email:user.email, verified:user.verified ,name: user.name});
+        }else{
+            if(verifiedBool == true){
                     user.verified = true;
                     user.save().then((doc) => {
                     }).catch((err) => {
                         return res.json({status: 400, message: "error verifiying user, try after sometime"});
                     });
-                }
                 token = jwt.sign({email: user.email}, config.jwt_secret, {expiresIn: 86400});
                 res.json({status: 200, auth: true, token: token ,email:user.email, verified:user.verified ,name: user.name});
             }
-        }).catch((err) => {
-            return res.json({status:400, message:"Email does not exist"});
-        })
+                
+        }
     }
 
     if(!token){
         //check user verified, then normal login
         User.findOne({email: email}).then((user) => {
             // if(user.verified == true){
-                verifypwd(email);
+                verifypwd(email,user);
             // }else{
             //     res.json({status: 400, message: "confirm your registration by clicking on the mail" , email:user.email, verified:user.verified});
             // }
@@ -118,8 +121,8 @@ router.post('/login', (req,res) => {
             }
             if(email == decoded.email){
                 User.findOne({email:email}).then((user) => {
-                    verified = true;
-                    verifypwd(email);
+                    verifiedBool = true;
+                    verifypwd(email,user);
                 }).catch((err) => {
                     return res.json({status: 403, message: 'Email does not exist'});
                 });
